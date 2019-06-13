@@ -12,11 +12,6 @@ app.use(checkToken);
 
 module.exports =app;
 
-app.get("/", (req,res)=>{
-    res.send("hello world!!!!");
-    res.end();
-}); 
-
 const courses = [
     {id:1,name:"course1"},
     {id:2,name:"course2"},
@@ -116,20 +111,42 @@ function validateCourse(course){
     });
 });*/
 
+function RunSql(sqlcmd){
 
-// var mysql = require('mysql');
+    const sql = require('mssql');
 
-// var con = mysql.createConnection({
-//   host: "localhost",
-//   user: "yourusername",
-//   password: "yourpassword"
-// });
+    const config = {        
+        server: 'localhost\SQLEXPRESS', 
+        database: 'aspnetdb', 
+        driver: "msnodesqlv8",
+        options: {
+            trustedConnection: true
+        }
+    };
 
-// con.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected!");
-//   con.query("Select * from Customers", function (err, result, fields) {
-//     if (err) throw err;
-//     console.log(result);
-//   });
-// });
+    // var con = mysql.createConnection({
+    //   host: "localhost",
+    //   user: "yourusername",
+    //   password: "yourpassword"
+    // }); 
+    
+    const myCmd = sqlcmd;
+    //validation  myCmd
+    sql.connect(config, function(err) {
+        if (err) return console.log(err);
+        console.log("Connected!");
+        var request = new sql.Request();      
+        request.query(myCmd, function (err, result) {
+            if (err) console.log(err);
+            console.log(result);
+        });
+    })
+}
+
+app.get("/", (req,res)=>{
+    console.log("Read SQL")
+    var result = RunSql("SELECT ClientName FROM [aspnetdb].[dbo].[Clients] WHERE ClientId = 7")
+    res.send(result);
+    res.end();
+}); 
+
