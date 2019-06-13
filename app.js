@@ -1,8 +1,15 @@
 const Joi = require('joi');
 const express = require('express');
 const app = express();
+const checkToken = require('./checkToken')
 
 app.use(express.json());
+app.use(express.urlencoded({entended:true}));  //key=value&key=value
+app.use(express.static('publicFiles'));
+
+
+app.use(checkToken);
+
 module.exports =app;
 
 app.get("/", (req,res)=>{
