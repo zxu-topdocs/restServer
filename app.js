@@ -1,12 +1,13 @@
 const Joi = require('joi');
 const express = require('express');
 const app = express();
-const checkToken = require('./checkToken')
+const checkToken = require('./checkToken');
+const helmet = require ('helmet');
 
 app.use(express.json());
 app.use(express.urlencoded({entended:true}));  //key=value&key=value
 app.use(express.static('publicFiles'));
-
+app.use(helmet);
 
 app.use(checkToken);
 
