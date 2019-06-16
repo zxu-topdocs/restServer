@@ -3,14 +3,25 @@ const express = require('express');
 const app = express();
 const checkToken = require('./checkToken');
 const helmet = require ('helmet');
+const config =require('config');
+const startupDebug = require('debug')('app:starup');
+const dbDebug = require('debug')('app:db');
+
+//process.env.NODE_ENV;
+console.log("App Name:" + config.get('name'));
+console.log ("Mail server:"+ config.get('mail.host'));
 
 app.use(express.json());
 app.use(express.urlencoded({entended:true}));  //key=value&key=value
 app.use(express.static('publicFiles'));
-app.use(helmet);
 
-app.use(checkToken);
-
+if (app.get('env') ==='develpemnt'){
+    app.use(helmet());
+    startupDebug("use he;lmet");
+}
+if (app.get('env') ==='production'){
+    app.use(checkToken);
+}
 module.exports =app;
 
 const courses = [
@@ -117,7 +128,7 @@ function RunSql(sqlcmd){
     const sql = require('mssql');
 
     const config = {        
-        server: 'localhost\SQLEXPRESS', 
+        server: 'localhost\SQLEXPRESS2', 
         database: 'aspnetdb', 
         driver: "msnodesqlv8",
         options: {
@@ -146,8 +157,8 @@ function RunSql(sqlcmd){
 
 app.get("/", (req,res)=>{
     console.log("Read SQL")
-    var result = RunSql("SELECT ClientName FROM [aspnetdb].[dbo].[Clients] WHERE ClientId = 7")
-    res.send(result);
-    res.end();
+    // var result = RunSql("SELECT ClientName FROM [aspnetdb].[dbo].[Clients] WHERE ClientId = 7")
+    // res.send(result);
+    // res.end();
 }); 
 
